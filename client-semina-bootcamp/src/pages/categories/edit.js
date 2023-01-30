@@ -4,10 +4,13 @@ import SBreadCrumb from '../../components/Breadcrumb';
 import SAlert from '../../components/Alert';
 import Form from './form';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getData,putData } from '../../utils/fetch';
+import { useDispatch } from 'react-redux';
+import { setNotif } from '../../redux/notif/actions';
 
 function CategoryEdit() {
   const navigate = useNavigate();
-
+  const dispacth = useDispatch();
   const { categoryId } = useParams();
   const [form, setForm] = useState({
     name: '',
@@ -26,8 +29,8 @@ function CategoryEdit() {
   };
 
   const fetchOneCategories = async () => {
-    // const res = await getData(`api/v1/categories/${categoryId}`);
-    // setForm({ ...form, name: res.data.data.name });
+    const res = await getData(`api/v1/categories/${categoryId}`);
+    setForm({ ...form, name: res.data.data.name });
   };
 
   useEffect(() => {
@@ -38,8 +41,14 @@ function CategoryEdit() {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      // const res = await putData(`api/v1/categories/${categoryId}`, form);
-
+      const res = await putData(`api/v1/categories/${categoryId}`, form);
+      dispacth(
+        setNotif(
+            true,
+            'success',
+            `berhasil ubah kategori ${res.data.data.name}`
+        )
+      );
       navigate('/categories');
       setIsLoading(false);
     } catch (err) {
